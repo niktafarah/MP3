@@ -20,13 +20,14 @@ let ball;
 let shadow;
 let net;
 let netsign;
-let netbound2
+let netbound2;
+let holder;
 
 
 // Initialize some params
 let ballSize = 60;
-let ballX = 70; 
-let ballY = 590; 
+let ballX = 100; 
+let ballY = 599; 
 
 let finalScore = 0;
 let scoreSize = 32;
@@ -59,8 +60,14 @@ function draw() {
     if (ball.collides(netbound2)) {
         ball.pos = {x:ballX, y:ballY};
     }
+
+    // if (ball.collided(floor)) {
+    //     ball.remove();
+    // };
+
     drawScore();
 }
+
 
 function drawScore() {
     textAlign(RIGHT, TOP);
@@ -105,6 +112,8 @@ function setupBounds() {
     walls.color = colors.background;
   }
 
+
+
 function setupFloor() {
     floor = new Sprite ();
     floor.color = colors.grey;
@@ -114,14 +123,6 @@ function setupFloor() {
     floor.collider = 'static';
 }
 
-// function setupShadow() {
-//     shadow = new Sprite ();
-//     noStroke();
-//     shadow.color = colors.blue;
-//     shadow.diameter = ballSize;
-//     shadow.bounciness = 0.8;
-//     shadow.pos = {x:ballX, y:ballY+20};
-// }
 
 
 function netSign() {
