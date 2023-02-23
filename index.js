@@ -1,5 +1,3 @@
-// import { Sprite } from "three";
-
 // Declare some color constants
 const colors = {
     red: "#BF616A",
@@ -104,12 +102,6 @@ function drawScore() {
     }
 }
 
-function human() {
-    // Draw body and head of stick figure
-  translate(100, 50);
-  line(0, 25, 0, 60);
-  ellipse(0, 15, 20, 20);
-}
 
 function randomizeX() {
     randomnumX = int(random(20,400));
