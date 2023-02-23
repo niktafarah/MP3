@@ -22,49 +22,63 @@ let net;
 let netsign;
 let netbound2;
 let holder;
+let netwall;
+let randomnumX;
+let randomnumY;
 
 
 // Initialize some params
 let ballSize = 60;
-let ballX = 100; 
-let ballY = 599; 
+let ballX = 300; 
+let ballY = 500; 
 
 let finalScore = 0;
 let scoreSize = 32;
 
+
+
 function setup() {
     new Canvas(windowWidth, windowHeight);
-    world.gravity.y = 2;
+    world.gravity.y = 10;
     setupBounds();
     setupBall();
     setupFloor();
-    // setupShadow();
-    // shadow.overlaps(floor);
     setupNet();
-    netSign();
-    ball.overlaps(net);
-    setupNetBounds();
-    setupNetB2();
+    overlap();
+    randomizeX();
+    randomizeY();
+    soundFormats('mp3', 'ogg');
+    swish = loadSound('swish.mp3');
+    dribble = loadSound('dribble.mp3');
 }
+
 
 function draw() {
 	clear();
     if (mouse.presses()) {
-        ball.moveTo(mouse, 8);
+        ball.direction = ball.angleTo(mouse);
+        ball.speed = 15;
+        ball.overlaps(net);
+        ball.overlaps(netsign);
     }
     if (kb.presses('space')) {
         win.remove();
         finalScore = 0;
     }
 
-    if (ball.collides(netbound2)) {
-        ball.pos = {x:ballX, y:ballY};
+    if (ball.collides(netwall)) {
+        ball.remove();
+        setupBall();
     }
 
-    // if (ball.collided(floor)) {
-    //     ball.remove();
-    // };
+    if (ball.collides(floor)) {
+        dribble.play();
+    }
 
+    if (ball.collides(walls)) {
+        dribble.play();
+    }
+   
     drawScore();
 }
 
@@ -79,24 +93,48 @@ function drawScore() {
     fill(colors.foreground);
     text(finalScore, width - 10, 10);
 
-    if (ball.overlaps(netsign)) {
+    if (ball.overlaps(netbound2)) {
         finalScore = finalScore + 10;
+        swish.play();
+        ball.remove();
+        setupBall();
         if (finalScore == 50) {
             win();
         }
     }
-  }
+}
 
+function human() {
+    // Draw body and head of stick figure
+  translate(100, 50);
+  line(0, 25, 0, 60);
+  ellipse(0, 15, 20, 20);
+}
+
+function randomizeX() {
+    randomnumX = int(random(20,400));
+    return randomnumX;
+}
+
+function randomizeY() {
+    randomnumY = int(random(300,600));
+    return randomnumY;
+}
 
 function setupBall() {
     ball = new Sprite();
     ball.color = colors.orange;
     ball.diameter = ballSize;
-    ball.bounciness = 0.4;
-    ball.speed = 10;
-    ball.pos = {x:ballX, y:ballY};
+    ball.bounciness = 0.8;
+    ball.speed = 30;
+    ball.pos = {x:randomizeX(), y:randomizeY()};
+    ball.sleeping = true;
+    ball.mass = 20;
 }
 
+function overlap() {
+    ball.overlaps(net);
+}
 
 function setupBounds() {
     walls = new Sprite(
@@ -112,27 +150,13 @@ function setupBounds() {
     walls.color = colors.background;
   }
 
-
-
 function setupFloor() {
     floor = new Sprite ();
     floor.color = colors.grey;
     floor.y = 600;
     floor.w = windowWidth;
-    floor.h = 100;
+    floor.h = windowHeight/4;
     floor.collider = 'static';
-}
-
-
-
-function netSign() {
-    netsign = new Sprite ();
-    netsign.color = colors.yellow;
-    netsign.w = 196;
-    netsign.h = 1;
-    netsign.pos = {x:windowWidth, y:windowHeight/3};
-    netsign.collider = 'static';
-    netsign.visible = false;
 }
 
 function setupNet() {
@@ -142,21 +166,31 @@ function setupNet() {
     net.h = 10;
     net.pos = {x:windowWidth, y:windowHeight/3};
     net.collider = 'static';
-}
 
+    netsign = new Sprite ();
+    netsign.color = colors.yellow;
+    netsign.w = 196;
+    netsign.h = 1;
+    netsign.pos = {x:windowWidth, y:windowHeight/3};
+    netsign.collider = 'static';
+    netsign.visible = false;
 
-
-function setupNetBounds() {
     netbound = new Sprite ();
-    netbound.pos = {x:windowWidth-100,y:windowHeight/2+50};
+    netbound.pos = {x:windowWidth-100,y:windowHeight/2+60};
     netbound.h = windowHeight/2;
     netbound.w = 2;
     noStroke();
     netbound.visible = false;
     netbound.collider = 'static';
-}
+    
+    netwall = new Sprite ();
+    netwall.pos = {x:windowWidth-105,y:windowHeight/2+40};
+    netwall.h = windowHeight/2.5;
+    netwall.w = 2;
+    noStroke();
+    netwall.visible = false;
+    netwall.collider = 'static';
 
-function setupNetB2() {
     netbound2 = new Sprite ();
     netbound2.pos = {x:windowWidth,y:windowHeight/2+30};
     netbound2.h = 2;
@@ -174,61 +208,3 @@ function win() {
     win.collider = 'static';
     win.color = colors.foreground; 
 }
-
-
-// import { Sprite } from "three";
-
-// import {
-//     BoxGeometry,
-//     Mesh,
-//     MeshPhongMaterial,
-//     PerspectiveCamera,
-//     Scene,
-//     WebGLRenderer,
-//     DirectionalLight,
-//   } from "three";
-  
-//   // Create our scene
-//   const scene = new Scene();
-  
-//   // Create the camera so we can see our scene
-//   const camera = new PerspectiveCamera(
-//     75,
-//     window.innerWidth / window.innerHeight,
-//     0.1,
-//     1000
-//   );
-  
-//   // Create our renderer and add it to the DOM
-//   const renderer = new WebGLRenderer();
-//   renderer.setSize(window.innerWidth, window.innerHeight);
-//   document.body.appendChild(renderer.domElement);
-  
-//   // Create our cube mesh from  a geometry and a material and add it to the scene
-//   const geometry = new BoxGeometry(1, 1, 1);
-//   const material = new MeshPhongMaterial({ color: 0x00ff00 });
-//   const cube = new Mesh(geometry, material);
-//   scene.add(cube);
-  
-//   // Add a directional light so we can see shadows on the cube
-//   const color = 0xffffff;
-//   const intensity = 1;
-//   const light = new DirectionalLight(color, intensity);
-//   light.position.set(-1, 2, 4);
-//   scene.add(light);
-  
-//   // Position the camera
-//   camera.position.z = 5;
-  
-//   // The animation loop updates the cube's rotation
-//   function animate() {
-//     requestAnimationFrame(animate);
-//     cube.rotation.x += 0.01;
-//     cube.rotation.y += 0.01;
-//     renderer.render(scene, camera);
-//   }
-  
-//   // Start the animation loop
-//   animate();
-  
-// Declare sprite variables
