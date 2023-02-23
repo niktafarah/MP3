@@ -145,9 +145,9 @@ function setupBounds() {
 function setupFloor() {
     floor = new Sprite ();
     floor.color = colors.grey;
-    floor.y = 600;
+    floor.y = windowHeight;
     floor.w = windowWidth;
-    floor.h = windowHeight/4;
+    floor.h = windowHeight/3;
     floor.collider = 'static';
 }
 
